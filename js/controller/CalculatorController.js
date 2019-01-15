@@ -1,6 +1,8 @@
 class CalculatorController {
   
   constructor() {
+    this._soundKey = new Audio('click.mp3');
+    this._audioOnOff = false;
     this._expression = [];
     this._lastOperator;
     this._lastNumber;
@@ -8,19 +10,33 @@ class CalculatorController {
     this._btns = document.querySelectorAll('button');
     this.initialize();
   }
+  
   initialize() {
     this.display = 0;
     this.getActionBtn();
     this.getActionKeys();
   }
- 
+
+  toggleAudio() {
+    this._audioOnOff = !this._audioOnOff;
+  }
+
+  soundKeyPlay() {
+    if ( this._audioOnOff ) {
+      this._soundKey.currentTime = 0;
+      this._soundKey.play();
+    }
+  }
+
   msgError() {
     this.display = "Error";
   }
+
   clearAll() {
     this._expression = [];
     this.display = 0;
   }
+
   isEmptyExpression() {
     return this._expression.length == 0;
   }
@@ -127,8 +143,9 @@ class CalculatorController {
       this.updateDisplay();
     }
   }
-
+ 
   associateValuesBtn(value) {
+    this.soundKeyPlay();
     switch (value) {
       case 'C':
         this.clearAll();
@@ -171,6 +188,7 @@ class CalculatorController {
         this.msgError();
     }
   }
+  
   getActionKeys() {
     document.addEventListener( 'keyup', e  => {
       let value = e.key;
@@ -220,6 +238,11 @@ class CalculatorController {
   getActionBtn() {
     this._btns.forEach( btn  => {
       btn.addEventListener('click', e => {
+        if (btn.innerHTML == 'C') {
+          btn.addEventListener('dblclick', e => {
+            this.toggleAudio();
+          });
+        }
         this.associateValuesBtn(btn.innerHTML);
       });
     });
@@ -242,23 +265,4 @@ class CalculatorController {
   set lastNumber( value ) {
     this._lastNumber = value;
   }
-    ;
 }
-
-/**
- * TODO:
- * [x] pegar valores dos botões
- * [x] transformas os valores com seus significados corretos
- * [x] verificar se é um número
- * [x] verificar se é um operador
- * [x] inserirValorNoDisplay
- * [x] operador =
- * [x] calcular
- * [x] +/-
- * [x] %
- * [x] .
- * [x] colocar valores pelo teclado
- * [] colocar som pelo teclado
- * [] colocar ctrl C e V
- * 
- */
